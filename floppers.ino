@@ -159,7 +159,7 @@ void loop() {
       freq = 10;
       break;
     default:
-    freq = 0;
+      freq = 0;
   }
   if (freq != 0){
     frame(drives[currentDrive].data, freq);
