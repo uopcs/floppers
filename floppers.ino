@@ -3,6 +3,16 @@
 #include <PS2Keyboard.h>
 #include<stdio.h>
 
+// 7 segment pins
+int f = 13;
+int e = 12;
+int d = A0;
+int g = A2;
+int a = A3;
+int b = A4;
+int c = A5;
+int segments[7] = {a, b, c, d, e, f, g};
+
 const int DataPin = 3;
 const int IRQpin =  2;
 
@@ -42,6 +52,37 @@ PS2Keyboard keyboard;
 void tick(int pin){ // tick step motor
   digitalWrite(pin, 1);
   digitalWrite(pin, 0);
+}
+
+void multiplex(int pin){
+  // for seven segment
+  digitalWrite(pin, 1);
+  digitalWrite(pin, 0);
+}
+
+void writeNum(int num){
+  num++;
+  if (num == 1){
+    multiplex(b);
+    multiplex(c);
+  } else if (num == 2){
+    multiplex(a);
+    multiplex(b);
+    multiplex(g);
+    multiplex(e);
+    multiplex(d);
+  } else if (num == 3){
+    multiplex(b);
+    multiplex(c);
+    multiplex(a);
+    multiplex(g);
+    multiplex(d);
+  }
+  
+  for (int i = 0; i < 7; i++){
+    pinMode(segments[i], OUTPUT);
+    digitalWrite(segments[i], 1);
+  }
 }
 
 void resetDrive(int id){
@@ -84,12 +125,18 @@ void setup() {
     pinMode(drives[i].data[0], OUTPUT);
     pinMode(drives[i].data[1], OUTPUT);
   }
+  for (int i = 0; i < 7; i++){
+    pinMode(segments[i], OUTPUT);
+    digitalWrite(segments[i], 1);
+  }
 }
 
 
 
 void loop() {
-  
+  for (int i = 0; i < 3; i++){ // make sure it's fairly bright
+    writeNum(currentDrive);
+  }
   
   counter++;
   expire--;
@@ -109,6 +156,12 @@ void loop() {
       resetDrive(currentDrive); // the current drive cannot be looping
     }
     
+    if (c == PS2_DELETE){
+      currentDrive = 0;
+      for (int i = 0; i < noOfDrives; i++){
+        resetDrive(i);
+      }
+    }
     
     if (c == PS2_TAB) {
       drives[currentDrive].recording = true;
