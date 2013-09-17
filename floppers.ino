@@ -24,8 +24,8 @@ int noOfDrives = 3;
 
 typedef struct drive drive; // struct for drives
 struct drive{
-  int notes[200]; // array loop will be stored in
-  // notes are 60ms long, meaning max loop is 12 seconds
+  int notes[250]; // array loop will be stored in
+  // notes are 50ms long, meaning max loop is 12.5 seconds
   int data[4]; // pin data
   int currentNote;
   boolean recording;
@@ -79,18 +79,14 @@ void writeNum(int num){
     multiplex(d);
   }
   
-  for (int i = 0; i < 7; i++){
-    pinMode(segments[i], OUTPUT);
-    digitalWrite(segments[i], 1);
-  }
 }
 
 void resetDrive(int id){
     drives[id].currentNote = 0;
     drives[id].recording = false;
     drives[id].looping = false;
-    drives[id].loopCap = 200; // default 
-    for (int i = 0; i < 200; i++){
+    drives[id].loopCap = 250; // default 
+    for (int i = 0; i < 250; i++){
       drives[id].notes[i] = 0; // reset recording
     }
 }
@@ -104,7 +100,7 @@ void frame(int drive[], float freq){
     tick(drive[1]);
     drive[2]++; // increment counter
     
-    if (drive[2] % 90 == 0){
+    if (drive[2] % 90 == 0){ // 90 approx number of ticks in one direction
       // change direction of actuator
       if (drive[3] == 0){
         drive[3] = 1;
@@ -233,7 +229,7 @@ void loop() {
   
   // recording
   if (drives[currentDrive].recording){
-    if (counter % 60 == 0){ // read every 120ms
+    if (counter % 50 == 0){ // read every 120ms
       //Serial.print(freq);
       drives[currentDrive].notes[drives[currentDrive].currentNote] = freq;
       drives[currentDrive].currentNote++;
@@ -258,7 +254,7 @@ void loop() {
       int driveFreq = drives[i].notes[drives[i].currentNote];
       //Serial.println(driveFreq);
       frame(drives[i].data, driveFreq);
-      if (counter % 60 == 0){ // change note every 120ms
+      if (counter % 50 == 0){ // change note every 120ms
         drives[i].currentNote++;
         if (drives[i].currentNote >= drives[i].loopCap){
           drives[i].currentNote = 0; // restart loop!
@@ -272,7 +268,13 @@ void loop() {
 
 
   
-   delay(1.2); // 1ms delay for step motor
+   delay(1.8); // 1ms delay for step motor
+   
+   
+  for (int i = 0; i < 7; i++){ // refresh 7 sgement
+    pinMode(segments[i], OUTPUT);
+    digitalWrite(segments[i], 1);
+  }
   
   
 
