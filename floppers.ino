@@ -99,32 +99,41 @@ void loop() {
   switch(currentChar){
     case 'a':
       frame(drives[currentDrive].data, 2);
+      break;
     case 's':
       frame(drives[currentDrive].data, 3);
+      break;
     case 'd':
       frame(drives[currentDrive].data, 4);
+      break;
     case 'f':
       frame(drives[currentDrive].data, 5);
+      break;
     case 'g':
       frame(drives[currentDrive].data, 6);
+      break;
     case 'h':
       frame(drives[currentDrive].data, 7);
+      break;
     case 'j':
       frame(drives[currentDrive].data, 8);
+      break;
     case 'k':
       frame(drives[currentDrive].data, 9);
+      break;
     case 'l':
       frame(drives[currentDrive].data, 10);
+      break;
+    default:
+      int z = 0;
   }
   
   
 
 
   
+   delay(1); //  delay for step motor
   
   
 
-    
-  
-  delay(1); //  delay for step motor
 }
