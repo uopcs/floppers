@@ -1,4 +1,4 @@
 floppers
 ========
 
-arduino code for music floppies
+arduino code for musical floppies
