@@ -14,11 +14,13 @@ int noOfDrives = 3;
 
 typedef struct drive drive; // struct for drives
 struct drive{
-  int notes[50]; // array loop will be stored in
+  int notes[200]; // array loop will be stored in
+  // notes are 60ms long, meaning max loop is 12 seconds
   int data[4]; // pin data
   int currentNote;
   boolean recording;
   boolean looping;
+  int loopCap; // length of the loop of notes, defaults as 200
 };
 
 struct drive drives[3];
@@ -28,9 +30,7 @@ void setupDrives(){
     for (int j = 0; j < 4; j++){
       drives[i].data[j] = packedData[i][j];
     }
-    drives[i].currentNote = 0;
-    drives[i].recording = false;
-    drives[i].looping = false;
+    resetDrive(i);
   }
 }
 
@@ -44,7 +44,20 @@ void tick(int pin){ // tick step motor
   digitalWrite(pin, 0);
 }
 
+void resetDrive(int id){
+    drives[id].currentNote = 0;
+    drives[id].recording = false;
+    drives[id].looping = false;
+    drives[id].loopCap = 200; // default 
+    for (int i = 0; i < 200; i++){
+      drives[id].notes[i] = 0; // reset recording
+    }
+}
+
 void frame(int drive[], float freq){
+  if (freq == 0){
+    return;
+  }
   if (counter % int(freq) == 0){
     // move actuator
     tick(drive[1]);
@@ -93,11 +106,21 @@ void loop() {
       if (currentDrive >= noOfDrives){
         currentDrive = 0;
       }
+      resetDrive(currentDrive); // the current drive cannot be looping
     }
     
     
     if (c == PS2_TAB) {
       drives[currentDrive].recording = true;
+      drives[currentDrive].loopCap = 200; // default
+      
+    }
+    
+    if (c == PS2_ESC) {
+      // end loop
+      if (drives[currentDrive].recording == true){
+        drives[currentDrive].loopCap = drives[currentDrive].currentNote;
+      }
     }
     
     // a char has been pressed!
@@ -142,14 +165,39 @@ void loop() {
     frame(drives[currentDrive].data, freq);
   }
   
+  
+  // recording
   if (drives[currentDrive].recording){
-    if (counter % 120 == 0){ // read every 120ms
-      Serial.print(freq);
+    if (counter % 60 == 0){ // read every 120ms
+      //Serial.print(freq);
+      drives[currentDrive].notes[drives[currentDrive].currentNote] = freq;
       drives[currentDrive].currentNote++;
-      if (drives[currentDrive].currentNote >= 50){
+      if (drives[currentDrive].currentNote >= drives[currentDrive].loopCap){
         drives[currentDrive].recording = false; // turn recording off
         drives[currentDrive].currentNote = 0; // reset currentNote
-        Serial.println();
+        drives[currentDrive].looping = true;
+        //Serial.println();
+        currentDrive++; // increment drive id
+        if (currentDrive >= noOfDrives){
+          currentDrive = 0;
+        }
+        resetDrive(currentDrive); // the current drive cannot be looping
+      }
+    }
+  }
+  
+  // looping
+  for (int i = 0; i < noOfDrives; i++){
+    if (drives[i].looping){
+      // this drive is in loop cycle
+      int driveFreq = drives[i].notes[drives[i].currentNote];
+      //Serial.println(driveFreq);
+      frame(drives[i].data, driveFreq);
+      if (counter % 60 == 0){ // change note every 120ms
+        drives[i].currentNote++;
+        if (drives[i].currentNote >= drives[i].loopCap){
+          drives[i].currentNote = 0; // restart loop!
+        }
       }
     }
   }
