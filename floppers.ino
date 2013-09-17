@@ -211,6 +211,18 @@ void loop() {
     case 'l':
       freq = 10;
       break;
+    case '1':
+      currentDrive = 0;
+      resetDrive(0);
+      break;
+    case '2':
+      currentDrive = 1;
+      resetDrive(1);
+      break;
+    case '3':
+      currentDrive = 2;
+      resetDrive(2);
+      break;
     default:
       freq = 0;
   }
@@ -260,7 +272,7 @@ void loop() {
 
 
   
-   delay(1); // 1ms delay for step motor
+   delay(1.2); // 1ms delay for step motor
   
   
 
