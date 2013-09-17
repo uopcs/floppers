@@ -95,34 +95,31 @@ void loop() {
       currentChar = c;
     }
   }
-      
-  if (currentChar == 'a'){
-    frame(drives[currentDrive].data, 2);
-  }    
-  if (currentChar == 's'){
-    frame(drives[currentDrive].data, 3);
-  }    
-  if (currentChar == 'd'){
-    frame(drives[currentDrive].data, 4);
-  }    
-  if (currentChar == 'f'){
-    frame(drives[currentDrive].data, 5);
-  }    
-  if (currentChar == 'g'){
-    frame(drives[currentDrive].data, 6);
-  }    
-  if (currentChar == 'h'){
-    frame(drives[currentDrive].data, 7);
-  }    
-  if (currentChar == 'j'){
-    frame(drives[currentDrive].data, 8);
-  }    
-  if (currentChar == 'k'){
-    frame(drives[currentDrive].data, 9);
-  }    
-  if (currentChar == 'l'){
-    frame(drives[currentDrive].data, 10);
+  
+  switch(currentChar){
+    case 'a':
+      frame(drives[currentDrive].data, 2);
+    case 's':
+      frame(drives[currentDrive].data, 3);
+    case 'd':
+      frame(drives[currentDrive].data, 4);
+    case 'f':
+      frame(drives[currentDrive].data, 5);
+    case 'g':
+      frame(drives[currentDrive].data, 6);
+    case 'h':
+      frame(drives[currentDrive].data, 7);
+    case 'j':
+      frame(drives[currentDrive].data, 8);
+    case 'k':
+      frame(drives[currentDrive].data, 9);
+    case 'l':
+      frame(drives[currentDrive].data, 10);
   }
+  
+  
+
+
   
   
   
