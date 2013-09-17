@@ -14,8 +14,11 @@ int noOfDrives = 3;
 
 typedef struct drive drive; // struct for drives
 struct drive{
-  int notes[20]; // array loop will be stored in
+  int notes[50]; // array loop will be stored in
   int data[4]; // pin data
+  int currentNote;
+  boolean recording;
+  boolean looping;
 };
 
 struct drive drives[3];
@@ -25,6 +28,9 @@ void setupDrives(){
     for (int j = 0; j < 4; j++){
       drives[i].data[j] = packedData[i][j];
     }
+    drives[i].currentNote = 0;
+    drives[i].recording = false;
+    drives[i].looping = false;
   }
 }
 
@@ -89,50 +95,71 @@ void loop() {
       }
     }
     
+    
+    if (c == PS2_TAB) {
+      drives[currentDrive].recording = true;
+    }
+    
     // a char has been pressed!
     if (c != NULL){
-      expire = 170;
+      expire = 120;
       currentChar = c;
     }
   }
-  
+  int freq; // get frequency of next note
   switch(currentChar){
     case 'a':
-      frame(drives[currentDrive].data, 2);
+      freq = 2;
       break;
     case 's':
-      frame(drives[currentDrive].data, 3);
+      freq = 3;
       break;
     case 'd':
-      frame(drives[currentDrive].data, 4);
+      freq = 4;
       break;
     case 'f':
-      frame(drives[currentDrive].data, 5);
+      freq = 5;
       break;
     case 'g':
-      frame(drives[currentDrive].data, 6);
+      freq = 6;
       break;
     case 'h':
-      frame(drives[currentDrive].data, 7);
+      freq = 7;
       break;
     case 'j':
-      frame(drives[currentDrive].data, 8);
+      freq = 8;
       break;
     case 'k':
-      frame(drives[currentDrive].data, 9);
+      freq = 9;
       break;
     case 'l':
-      frame(drives[currentDrive].data, 10);
+      freq = 10;
       break;
     default:
-      int z = 0;
+    freq = 0;
+  }
+  if (freq != 0){
+    frame(drives[currentDrive].data, freq);
+  }
+  
+  if (drives[currentDrive].recording){
+    if (counter % 120 == 0){ // read every 120ms
+      Serial.print(freq);
+      drives[currentDrive].currentNote++;
+      if (drives[currentDrive].currentNote >= 50){
+        drives[currentDrive].recording = false; // turn recording off
+        drives[currentDrive].currentNote = 0; // reset currentNote
+        Serial.println();
+      }
+    }
   }
   
   
+  
 
 
   
-   delay(1); //  delay for step motor
+   delay(1); // 1ms delay for step motor
   
   
 
