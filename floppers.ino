@@ -16,15 +16,15 @@ int segments[7] = {a, b, c, d, e, f, g};
 const int DataPin = 3;
 const int IRQpin =  2;
 
-int packedData[3][4] = {{4, 5, 1, 0}, {6, 7, 1, 0}, {8, 9, 1, 0}}; // floppy drive array
+int packedData[4][4] = {{4, 5, 1, 0}, {6, 7, 1, 0}, {8, 9, 1, 0}, {10, 11, 1, 0}}; // floppy drive array
 int currentDrive = 0;
 int counter = 0;
-int noOfDrives = 3;
+int noOfDrives = 4;
 
 
 typedef struct drive drive; // struct for drives
 struct drive{
-  int notes[250]; // array loop will be stored in
+  int notes[200]; // array loop will be stored in
   // notes are 50ms long, meaning max loop is 12.5 seconds
   int data[4]; // pin data
   int currentNote;
@@ -33,7 +33,7 @@ struct drive{
   int loopCap; // length of the loop of notes, defaults as 200
 };
 
-struct drive drives[3];
+struct drive drives[4]; 
 
 void setupDrives(){
   for (int i = 0; i < noOfDrives; i++){
@@ -77,6 +77,11 @@ void writeNum(int num){
     multiplex(a);
     multiplex(g);
     multiplex(d);
+  } else if (num == 4){
+    multiplex(f);
+    multiplex(b);
+    multiplex(g);
+    multiplex(c);
   }
   
 }
@@ -85,8 +90,8 @@ void resetDrive(int id){
     drives[id].currentNote = 0;
     drives[id].recording = false;
     drives[id].looping = false;
-    drives[id].loopCap = 250; // default 
-    for (int i = 0; i < 250; i++){
+    drives[id].loopCap = 200; // default 
+    for (int i = 0; i < 200; i++){
       drives[id].notes[i] = 0; // reset recording
     }
 }
@@ -218,6 +223,10 @@ void loop() {
     case '3':
       currentDrive = 2;
       resetDrive(2);
+      break;
+    case '4':
+      currentDrive = 3;
+      resetDrive(3);
       break;
     default:
       freq = 0;
